@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thank You</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff; /* White */
+            color: #000; /* Black */
+            line-height: 1.6;
+        }
+        h1 {
+            color: #26a69a; /* Dark teal */
+            text-align: center;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .scripture {
+            font-style: italic;
+            color: #666; /* Dark gray */
+            text-align: center;
+            margin: 20px 0;
+        }
+        .contact {
+            color: #26a69a; /* Dark teal */
+            text-decoration: none;
+        }
+        .contact:hover {
+            text-decoration: underline;
+        }
+        .signature {
+            text-align: center;
+            margin-top: 20px;
+            color: #666; /* Dark gray */
+        }
+    </style>
+</head>
+<body>
+    <h1>Thank You for Your Generosity!</h1>
+    <p>Dear {{ first_name }},</p>
+    <p>We sincerely appreciate your generous giving to Believers Gathering Place (BGP). Your tithe and offering help support BGP's mission, ministry, and community impact.</p>
+    <p class="scripture">“Whoever sows sparingly will also reap sparingly, and whoever sows generously will also reap generously.” – 2 Corinthians 9:6</p>
+    <p>Your transaction has been received successfully. Please check your email if you need a receipt or have any questions.</p>
+    <p><strong>Need Assistance?</strong><br>
+    If you have any questions about your giving, feel free to reach out to us at <a href="mailto:info@bgpnc.com" class="contact">info@bgpnc.com</a>.</p>
+    <p class="signature">– The BGP Team</p>
+</body>
+</html>
