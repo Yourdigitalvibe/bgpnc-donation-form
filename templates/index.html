@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGPNC - Give</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #f9f9f9;
+            color: #212121;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23009688' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            padding: 0 15px;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-height: 80px;
+            margin-bottom: 5px;
+        }
+        .container {
+            display: flex;
+            background-color: #fff;
+            padding: 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            flex-direction: row;
+            overflow: hidden;
+        }
+        .left-column {
+            width: 30%;
+            background: linear-gradient(135deg, #009688 0%, #00796b 100%);
+            padding: 25px;
+            border-radius: 10px 0 0 10px;
+            color: white;
+            position: relative;
+        }
+        .left-column:after {
+            content: "";
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        .right-column {
+            width: 70%;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .right-column:before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            background: #9c8040;
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            color: #009688; /* BGPNC Teal */
+            font-weight: 600;
+        }
+        h3 {
+            font-size: 20px;
+            color: white;
+            margin-top: 0;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        h3:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #212121;
+            font-weight: 500;
+        }
+        label i {
+            color: #009688;
+            margin-right: 5px;
+            width: 16px;
+            text-align: center;
+        }
+        .instruction {
+            font-style: italic;
+            color: #666;
+            margin: 10px 0 20px;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus,
+        select:focus {
+            border-color: #009688; /* BGPNC Teal */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+        }
+        .amount-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .amount-options button {
+            flex: 1;
+            min-width: 70px;
+            padding: 10px 15px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #212121;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .amount-options button:hover {
+            background-color: #009688; /* BGPNC Teal */
+            color: #fff;
+            border-color: #009688;
+        }
+        .fund-allocation {
+            border: 1px solid #e0f2f1;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+        .fund-allocation:hover {
+            box-shadow: 0 2px 8px rgba(0, 150, 136, 0.15);
+        }
+        .fund-allocation select {
+            width: 60%;
+            margin-right: 5%;
+        }
+        .fund-allocation input {
+            width: 35%;
+            position: relative;
+        }
+        .add-more {
+            display: inline-block;
+            color: #9c8040; /* BGPNC Gold */
+            cursor: pointer;
+            margin-top: 5px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .add-more:hover {
+            text-decoration: underline;
+        }
+        .secure-payment {
+            text-align: center;
+            margin: 15px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .secure-payment i {
+            color: #009688;
+            margin-right: 5px;
+        }
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            background-color: #9c8040; /* BGPNC Gold */
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        button[type="submit"]:hover {
+            opacity: 0.9;
+        }
+        button[type="submit"]:active {
+            transform: translateY(1px);
+        }
+        .summary {
+            font-size: 16px;
+            color: white;
+        }
+        .summary p {
+            margin: 8px 0;
+            line-height: 1.4;
+        }
+        .tagline {
+            text-align: center;
+            color: #009688; /* BGPNC Teal */
+            font-style: italic;
+            margin-bottom: 25px;
+            font-size: 18px;
+        }
+        .progress-steps {
+            display: flex;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            color: #999;
+            position: relative;
+        }
+        .step.active {
+            color: #009688;
+            font-weight: 600;
+        }
+        .step:not(:last-child):after {
+            content: "";
+            height: 1px;
+            width: 100%;
+            background: #eee;
+            position: absolute;
+            right: -50%;
+            top: 50%;
+            z-index: -1;
+        }
+        .step:before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background: #eee;
+            border-radius: 50%;
+            display: block;
+            margin: 0 auto 5px;
+        }
+        .step.active:before {
+            background: #009688;
+        }
+        .thank-you-message {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: #666;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-column {
+                width: 100%;
+                border-radius: 10px 10px 0 0;
+            }
+            .right-column {
+                width: 100%;
+            }
+            .amount-options {
+                flex-wrap: wrap;
+            }
+            .amount-options button {
+                min-width: calc(50% - 4px);
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <img src="https://bgpnc.com/wp-content/uploads/2023/09/bgp-logo-horizontal.png" alt="BGPNC Logo">
+        <div class="tagline">Believe. Connect. Grow.</div>
+    </div>
+
+    <div class="container">
+        <div class="left-column">
+            <h3>Giving Summary</h3>
+            <div class="summary" id="summary">
+                <p>Amount: $0</p>
+                <p>Funds: None</p>
+                <p>Frequency: One time</p>
+            </div>
+        </div>
+        <div class="right-column">
+            <div class="progress-steps">
+                <div class="step active">1. Giving</div>
+                <div class="step">2. Payment</div>
+                <div class="step">3. Confirmation</div>
+            </div>
+            
+            <h1>Support Our Ministry</h1>
+            <p class="instruction">Your generous gifts help us spread the message of hope and transformation.</p>
+            
+            <form id="payment-form">
+                <label for="total-amount"><i class="fas fa-dollar-sign"></i> Total Amount (USD) *</label>
+                <div class="amount-options">
+                    <button type="button" onclick="updateTotalAmount(20)">$20</button>
+                    <button type="button" onclick="updateTotalAmount(50)">$50</button>
+                    <button type="button" onclick="updateTotalAmount(100)">$100</button>
+                    <button type="button" onclick="updateTotalAmount(0)">Other</button>
+                </div>
+                <input type="number" id="total-amount" name="total_amount" min="1" step="0.01" placeholder="$0" readonly required>
+
+                <label for="fund-allocations"><i class="fas fa-hand-holding-heart"></i> Apply Funds To *</label>
+                <div id="fund-allocations">
+                    <div class="fund-allocation">
+                        <select name="fund[]" required>
+                            <option value="tithes">Tithes</option>
+                            <option value="offering">Offering</option>
+                            <option value="give3">Give 3 to BGP</option>
+                            <option value="sister-connect">BGP Sister Connect</option>
+                            <option value="brother-connect">BGP Brother Connect</option>
+                            <option value="singles-connect">BGP Singles Connect</option>
+                            <option value="marriage-connect">BGP Marriage Connect</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="number" name="fund_amount[]" min="1" step="0.01" placeholder="$0" required>
+                    </div>
+                </div>
+                <span class="add-more" onclick="addFundAllocation()"><i class="fas fa-plus-circle"></i> Add another fund</span>
+
+                <label for="recurring"><i class="fas fa-sync-alt"></i> Frequency *</label>
+                <select id="recurring" name="recurring" required>
+                    <option value="one-time">One time</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+
+                <label for="email"><i class="fas fa-envelope"></i> Email *</label>
+                <input type="email" id="email" name="email" placeholder="Email" required>
+
+                <label for="firstName"><i class="fas fa-user"></i> Name *</label>
+                <input type="text" id="firstName" name="firstName" placeholder="First name" required style="width: 48%; display: inline-block; margin-right: 4%;">
+                <input type="text" id="lastName" name="lastName" placeholder="Last name" required style="width: 48%; display: inline-block;">
+
+                <label for="note"><i class="fas fa-comment"></i> Note (Optional)</label>
+                <input type="text" id="note" name="note" placeholder="Add a note">
+
+                <div class="secure-payment">
+                    <i class="fas fa-lock"></i> Secure Payment
+                </div>
+
+                <button type="submit">CONTINUE TO PAYMENT</button>
+            </form>
+            
+            <div class="thank-you-message">
+                Thank you!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const stripe = Stripe('{{ stripe_publishable_key }}');
+        const form = document.getElementById('payment-form');
+        const totalAmountInput = document.getElementById('total-amount');
+        const fundAllocationsDiv = document.getElementById('fund-allocations');
+        const recurringSelect = document.getElementById('recurring');
+        const summaryDiv = document.getElementById('summary');
+
+        // Function to add a new fund allocation field
+        function addFundAllocation() {
+            const newAllocation = document.createElement('div');
+            newAllocation.className = 'fund-allocation';
+            newAllocation.innerHTML = `
+                <select name="fund[]" required>
+                    <option value="tithes">Tithes</option>
+                    <option value="offering">Offering</option>
+                    <option value="give3">Give 3 to BGP</option>
+                    <option value="sister-connect">BGP Sister Connect</option>
+                    <option value="brother-connect">BGP Brother Connect</option>
+                    <option value="singles-connect">BGP Singles Connect</option>
+                    <option value="marriage-connect">BGP Marriage Connect</option>
+                    <option value="other">Other</option>
+                </select>
+                <input type="number" name="fund_amount[]" min="1" step="0.01" placeholder="$0" required>
+            `;
+            fundAllocationsDiv.appendChild(newAllocation);
+            updateSummary();
+        }
+
+        // Function to update the total amount based on prefilled buttons
+        function updateTotalAmount(amount) {
+            const fundInputs = document.getElementsByName('fund_amount[]');
+            if (amount === 0) {
+                // For "Other", clear the last fund amount and focus on it
+                fundInputs[fundInputs.length - 1].value = '';
+                fundInputs[fundInputs.length - 1].focus();
+            } else {
+                // For prefilled amounts, set the last fund input to the prefilled value
+                fundInputs[fundInputs.length - 1].value = amount;
+            }
+            updateSummary();
+        }
+
+        // Function to update the summary dynamically
+        function updateSummary() {
+            const fundInputs = document.getElementsByName('fund_amount[]');
+            let totalAmount = 0;
+            let fundsSummary = [];
+
+            for (let i = 0; i < fundInputs.length; i++) {
+                const amount = parseFloat(fundInputs[i].value) || 0;
+                totalAmount += amount;
+                const fundSelect = fundInputs[i].parentElement.querySelector('select');
+                const fundName = fundSelect.options[fundSelect.selectedIndex].text;
+                if (amount > 0) {
+                    fundsSummary.push(`${fundName}: $${amount.toFixed(2)}`);
+                }
+            }
+
+            totalAmountInput.value = totalAmount.toFixed(2);
+            const frequency = recurringSelect.options[recurringSelect.selectedIndex].text;
+            summaryDiv.innerHTML = `
+                <p>Amount: $${totalAmount.toFixed(2)}</p>
+                <p>Funds: ${fundsSummary.length > 0 ? fundsSummary.join(', ') : 'None'}</p>
+                <p>Frequency: ${frequency}</p>
+            `;
+        }
+
+        // Add event listeners to update summary on input change
+        fundAllocationsDiv.addEventListener('input', updateSummary);
+        recurringSelect.addEventListener('change', updateSummary);
+
+        // Initial summary update
+        updateSummary();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const response = await fetch('/create-checkout-session', {
+                method: 'POST',
+                body: formData,
+            });
+            const session = await response.json();
+            if (session.error) {
+                alert(session.error);
+            } else {
+                const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+                if (error) alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
