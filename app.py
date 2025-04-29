@@ -8,8 +8,8 @@ from datetime import datetime
 app_url = os.environ.get('APP_URL', 'http://127.0.0.1:5002')
 
 app = Flask(__name__)
-app.secret_key = config('FLASK_SECRET_KEY')
-stripe.api_key = config('STRIPE_SECRET_KEY')
+app.secret_key = 'temp_test_secret_key_for_deployment_only'
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_put_your_test_key_here')
 
 # Configure logging to console
 logging.basicConfig(
@@ -19,7 +19,7 @@ logging.basicConfig(
 
 @app.route('/')
 def index():
-    return render_template('index.html', stripe_publishable_key=config('STRIPE_PUBLISHABLE_KEY'))
+    return render_template('index.html', stripe_publishable_key=os.environ.get('STRIPE_PUBLISHABLE_KEY', 'pk_test_put_your_test_key_here'))
 
 @app.route('/test')
 def test():
